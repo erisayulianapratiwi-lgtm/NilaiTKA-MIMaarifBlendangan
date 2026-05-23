@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hasil Nilai TKA & TKAD — MI Maarif Blendangan</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-50: #eafbf3;
+    --green-100: #c3f0d8;
+    --green-500: #1a9e62;
+    --green-600: #157a4c;
+    --green-700: #0f5c38;
+    --gold-400: #c89b3c;
+    --gold-100: #fdf3dc;
+    --bg: #f7f8f5;
+    --surface: #ffffff;
+    --border: #e3e8de;
+    --text-primary: #1a2218;
+    --text-secondary: #5a6b57;
+    --text-muted: #8fa08a;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --shadow: 0 2px 16px rgba(26,62,38,0.08);
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2rem 1rem 4rem;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 260px;
+    background: linear-gradient(160deg, var(--green-700) 0%, var(--green-500) 100%);
+    z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; width: 100%; max-width: 460px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── Header ── */
+  .site-header {
+    text-align: center;
+    padding: 2.5rem 1rem 2rem;
+    color: #fff;
+  }
+  .madrasah-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 99px;
+    padding: 4px 14px;
+    margin-bottom: 1rem;
+    color: rgba(255,255,255,0.9);
+  }
+  .site-header h1 {
+    font-family: 'Lora', serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 6px;
+  }
+  .site-header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 1.75rem;
+    margin-top: -0.5rem;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 1.25rem;
+  }
+
+  /* ── Form ── */
+  .field { margin-bottom: 1rem; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    letter-spacing: 0.04em;
+  }
+  .field input {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input:focus { border-color: var(--green-500); background: #fff; }
+  .field input::placeholder { color: var(--text-muted); }
+
+  .btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: var(--green-600);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    letter-spacing: 0.02em;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-primary:hover { background: var(--green-700); }
+  .btn-primary:active { transform: scale(0.98); }
+
+  .error-msg {
+    display: none;
+    margin-top: 0.75rem;
+    padding: 10px 14px;
+    background: #fff5f5;
+    border: 1px solid #fcc;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: #c0392b;
+    text-align: center;
+  }
+
+  /* ── Result Page ── */
+  .siswa-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--green-50);
+    border: 2px solid var(--green-100);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 600;
+    color: var(--green-600);
+    flex-shrink: 0;
+  }
+  .siswa-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+  .siswa-nisn { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+  .tag-kelas {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--green-50);
+    color: var(--green-600);
+    border: 1px solid var(--green-100);
+    border-radius: 99px;
+    padding: 4px 12px;
+    margin-bottom: 1.25rem;
+  }
+
+  .nilai-table { width: 100%; border-collapse: collapse; }
+  .nilai-table th {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .nilai-table th:last-child { text-align: center; }
+  .nilai-table td {
+    padding: 11px 10px;
+    font-size: 14px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border);
+  }
+  .nilai-table tr:last-child td { border-bottom: none; }
+  .nilai-table td:nth-child(2) { text-align: center; font-weight: 600; font-size: 15px; color: var(--green-600); }
+  .nilai-table td:nth-child(3) { text-align: center; }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 99px;
+  }
+  .badge-a { background: var(--green-50); color: var(--green-600); border: 1px solid var(--green-100); }
+  .badge-b { background: #eaf3fb; color: #1a6fa0; border: 1px solid #c3e0f0; }
+  .badge-c { background: var(--gold-100); color: var(--gold-400); border: 1px solid #f0dea8; }
+
+  .rata-row td {
+    background: var(--green-50);
+    font-weight: 600;
+    border-top: 1.5px solid var(--green-100);
+  }
+  .rata-row td:first-child { border-radius: 0 0 0 var(--radius-sm); }
+  .rata-row td:last-child { border-radius: 0 0 var(--radius-sm) 0; }
+
+  .btn-back {
+    display: block;
+    width: 100%;
+    margin-top: 1.25rem;
+    padding: 10px;
+    background: transparent;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-back:hover { background: var(--bg); }
+
+  .footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 1.5rem 0.75rem 3rem; }
+    .site-header h1 { font-size: 19px; }
+    .card { padding: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── LOGIN PAGE ─── -->
+<div class="page active" id="page-login">
+  <div class="site-header">
+    <div class="madrasah-badge">&#127979; MI Maarif Blendangan</div>
+    <h1>Pengumuman Hasil Nilai<br>TKA &amp; TKAD</h1>
+    <p>Kelas 6 &mdash; Tahun Pelajaran 2025/2026</p>
+  </div>
+
+  <div class="card">
+    <p class="card-title">Masuk untuk melihat nilai</p>
+    <div class="field">
+      <label for="nisn-input">NISN</label>
+      <input type="text" id="nisn-input" placeholder="Contoh: 201879" maxlength="20" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label for="nama-input">Nama Lengkap Siswa</label>
+      <input type="text" id="nama-input" placeholder="Masukkan nama lengkap" autocomplete="off" />
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Lihat Hasil Nilai &rarr;</button>
+    <p class="error-msg" id="error-msg">&#9888; NISN atau nama tidak ditemukan. Periksa kembali penulisannya.</p>
+  </div>
+
+  <p class="footer">MI Maarif Blendangan &copy; 2026</p>
+</div>
+
+<!-- ─── HASIL PAGE ─── -->
+<div class="page" id="page-hasil">
+  <div class="site-header">
+    <div class="madrasah-badge">&#127979; MI Maarif Blendangan</div>
+    <h1>Hasil Nilai TKA &amp; TKAD</h1>
+    <p>Kelas 6 &mdash; Tahun Pelajaran 2025/2026</p>
+  </div>
+
+  <div class="card">
+    <div class="siswa-header">
+      <div class="avatar" id="avatar-initials">AF</div>
+      <div>
+        <div class="siswa-name" id="result-nama">Albar Firmansyah</div>
+        <div class="siswa-nisn">NISN: <span id="result-nisn">201879</span></div>
+      </div>
+    </div>
+
+    <span class="tag-kelas">&#127891; Kelas 6 &mdash; MI Maarif Blendangan</span>
+
+    <table class="nilai-table">
+      <thead>
+        <tr>
+          <th>Mata Pelajaran</th>
+          <th>Nilai</th>
+          <th>Keterangan</th>
+        </tr>
+      </thead>
+      <tbody id="nilai-body"></tbody>
+    </table>
+
+    <button class="btn-back" onclick="doLogout()">&larr; Kembali</button>
+  </div>
+
+  <p class="footer">MI Maarif Blendangan &copy; 2026</p>
+</div>
+
+<script>
+  const siswaData = [
+    {
+      nisn: "201879",
+      nama: "Albar Firmansyah",
+      nilai: [
+        { mapel: "Matematika (MTK)", nilai: 80.00 },
+        { mapel: "Bahasa Indonesia",  nilai: 90.00 },
+        { mapel: "IPAS",              nilai: 85.00 }
+      ]
+    }
+  ];
+
+  function getKet(n) {
+    if (n >= 85) return { label: "Sangat Baik", cls: "badge-a" };
+    if (n >= 70) return { label: "Baik",        cls: "badge-b" };
+    return               { label: "Cukup",       cls: "badge-c" };
+  }
+
+  function getInitials(nama) {
+    return nama.split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase();
+  }
+
+  function doLogin() {
+    const nisn = document.getElementById("nisn-input").value.trim();
+    const nama = document.getElementById("nama-input").value.trim().toLowerCase();
+    const err  = document.getElementById("error-msg");
+
+    const found = siswaData.find(
+      s => s.nisn === nisn && s.nama.toLowerCase() === nama
+    );
+
+    if (!found) { err.style.display = "block"; return; }
+    err.style.display = "none";
+
+    document.getElementById("result-nama").textContent    = found.nama;
+    document.getElementById("result-nisn").textContent    = found.nisn;
+    document.getElementById("avatar-initials").textContent = getInitials(found.nama);
+
+    const tbody = document.getElementById("nilai-body");
+    tbody.innerHTML = "";
+    let total = 0;
+
+    found.nilai.forEach(item => {
+      total += item.nilai;
+      const ket = getKet(item.nilai);
+      tbody.innerHTML += `
+        <tr>
+          <td>${item.mapel}</td>
+          <td>${item.nilai.toFixed(2)}</td>
+          <td><span class="badge ${ket.cls}">${ket.label}</span></td>
+        </tr>`;
+    });
+
+    const rata = total / found.nilai.length;
+    const ketRata = getKet(rata);
+    tbody.innerHTML += `
+      <tr class="rata-row">
+        <td>Rata-rata</td>
+        <td>${rata.toFixed(2)}</td>
+        <td><span class="badge ${ketRata.cls}">${ketRata.label}</span></td>
+      </tr>`;
+
+    document.getElementById("page-login").classList.remove("active");
+    document.getElementById("page-hasil").classList.add("active");
+    window.scrollTo(0, 0);
+  }
+
+  function doLogout() {
+    document.getElementById("nisn-input").value = "";
+    document.getElementById("nama-input").value = "";
+    document.getElementById("page-hasil").classList.remove("active");
+    document.getElementById("page-login").classList.add("active");
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById("nisn-input").addEventListener("keydown", e => {
+    if (e.key === "Enter") document.getElementById("nama-input").focus();
+  });
+  document.getElementById("nama-input").addEventListener("keydown", e => {
+    if (e.key === "Enter") doLogin();
+  });
+</script>
+</body>
+</html>
